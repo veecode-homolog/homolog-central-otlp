@@ -1,0 +1,8 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: homolog-central-otlp-location
+  description: Location to import all homolog-central-otlp catalog components
+spec:
+  targets:
+    - ./.platform/*.yaml
