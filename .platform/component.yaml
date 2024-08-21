@@ -8,21 +8,15 @@ metadata:
     ingress_type: kong
     certificate_account_email: platformss@vee.codes
     certificate_environment_type: production
+    public_ip: 107.23.191.158
   annotations:
     github.com/project-slug: veecode-homolog/homolog-central-otlp
-    infracost/project: homolog-central-otlp 
+    infracost/project: homolog-central-otlp
     backstage.io/techdocs-ref: dir:..
-    github.com/workflows: terraform-deploy.yml,start-instance.yml,stop-instance.yml,kubeconfig.yml,terraform-destroy.yml,infracost.yml   
-    cluster/instructions: |
-      ssh -i ./key-pair.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} 
-      "mkdir -p .kube && k3d kubeconfig get ${CLUSTER_NAME} > ~/.kube/config"
-      scp -i ./key-pair.pem ${EC2_USER}@${EC2_HOST}:~/.kube/config ./config
-      yq e 'del(.clusters[0].cluster.certificate-authority-data)' -i ~/.kube/config
-      yq e '.clusters[0].cluster.insecure-skip-tls-verify=true' config -i
-      yq e '.clusters[0].cluster.server = "https://${EC2_HOST}:38517"' config -i
+    github.com/workflows: terraform-deploy.yml,start-instance.yml,stop-instance.yml,kubeconfig.yml,terraform-destroy.yml,infracost.yml
+    cluster/instructions: "# Run the following commands to import the kubeconfig:\n  ssh -i ./cert.pem -o StrictHostKeyChecking=no $USERNAME@$107.23.191.158 \"mkdir -p .kube && k3d kubeconfig get k3s > ~/.kube/config\"\n  scp -i ./cert.pem $USERNAME@$107.23.191.158:~/.kube/config ~/.kube/config-homolog-central-otlp\n  yq -e 'del(.clusters[0].cluster.certificate-authority-data) | .clusters[0].cluster.insecure-skip-tls-verify=true | .clusters[].cluster.server |= sub(\"0.0.0.0\", \"107.23.191.158\")' -i ~/.kube/config-homolog-central-otlp\n  export KUBECONFIG=~/.kube/config-homolog-central-otlp\n  kubectl get pods -A\n"
 spec:
   type: ec2
   lifecycle: experimental
   owner: "group:default/admin"
   environment: 'environment:default/platform_homolog_environment'
-  
